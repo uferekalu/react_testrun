@@ -30,6 +30,15 @@ const ELEMENT_OPTIONS = {
   },
 };
 
+const supportedCountries = [
+  'AE', 'AT', 'AU', 'BE', 'BG', 'BR', 'CA', 'CH', 'CI', 'CR',
+  'CY', 'CZ', 'DE', 'DK', 'DO', 'EE', 'ES', 'FI', 'FR', 'GB',
+  'GI', 'GR', 'GT', 'HK', 'HR', 'HU', 'ID', 'IE', 'IN', 'IT',
+  'JP', 'LI', 'LT', 'LU', 'LV', 'MT', 'MX', 'MY', 'NL', 'NO',
+  'NZ', 'PE', 'PH', 'PL', 'PT', 'RO', 'SE', 'SG', 'SI', 'SK',
+  'SN', 'TH', 'TT', 'US', 'UY'
+];
+
 const StripePayment = () => {
   const [subscriptionType, setSubscriptionType] = useState('standard');
   const [currency, setCurrency] = useState('usd');
@@ -43,7 +52,15 @@ const StripePayment = () => {
     const fetchCountry = async () => {
       try {
         const response = await axios.get('https://ipapi.co/json/');
-        setCountry(response.data.country_code);
+        const userCountry = response.data.country_code;
+
+        // Check if the country is supported
+        if (supportedCountries.includes(userCountry)) {
+          setCountry(userCountry);
+        } else {
+          console.warn(`Country ${userCountry} is not supported. Defaulting to 'US'.`);
+          setCountry('US'); // Fallback to US if unsupported
+        }
       } catch (error) {
         console.error('Error fetching country:', error);
       }
@@ -55,7 +72,7 @@ const StripePayment = () => {
   useEffect(() => {
     if (stripe) {
       const pr = stripe.paymentRequest({
-        country: country, // Use the detected country
+        country: country, // Use the detected or default country
         currency: currency,
         total: {
           label: 'Subscription',
