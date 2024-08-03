@@ -89,13 +89,13 @@ const StripePayment = () => {
       });
   
       // Handle the payment request event
-      pr.on('token', async (token) => {
+      pr.on('paymentmethod', async (event) => {
         try {
-          // Confirm the payment using the token
+          // Confirm the payment using the payment method
           const { data } = await axios.post(
             'http://localhost:3000/api/payments/subscribe',
             {
-              token: token.id,
+              paymentMethodId: event.paymentMethod.id,
               subscriptionType,
               currency,
             }
@@ -103,21 +103,22 @@ const StripePayment = () => {
   
           setClientSecret(data.clientSecret);
   
-          // Instead of using event.complete, handle it directly
-          pr.complete('success'); // Complete the payment request with success
+          // Complete the payment request with success
+          event.complete('success');
           alert('Payment successful!');
         } catch (error) {
           console.error('Error processing payment:', error);
-          pr.complete('fail'); // Complete the payment request with failure
+          event.complete('fail'); // Complete the payment request with failure
           alert('Payment failed, please try again.');
         }
       });
   
       return () => {
-        pr.off('token');
+        pr.off('paymentmethod');
       };
     }
   }, [stripe, subscriptionType, currency, country]);
+  
   
   const handleSubmit = async (event) => {
     event.preventDefault();
