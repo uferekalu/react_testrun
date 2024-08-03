@@ -35,13 +35,27 @@ const StripePayment = () => {
   const [currency, setCurrency] = useState('usd');
   const [clientSecret, setClientSecret] = useState('');
   const [paymentRequest, setPaymentRequest] = useState(null);
+  const [country, setCountry] = useState('US');
   const stripe = useStripe();
   const elements = useElements();
 
   useEffect(() => {
+    const fetchCountry = async () => {
+      try {
+        const response = await axios.get('https://ipapi.co/json/');
+        setCountry(response.data.country_code);
+      } catch (error) {
+        console.error('Error fetching country:', error);
+      }
+    };
+
+    fetchCountry();
+  }, []);
+
+  useEffect(() => {
     if (stripe) {
       const pr = stripe.paymentRequest({
-        country: 'US',
+        country: country, // Use the detected country
         currency: currency,
         total: {
           label: 'Subscription',
@@ -59,8 +73,13 @@ const StripePayment = () => {
 
       // Handle the payment request event
       pr.on('token', async (token, event) => {
-        // Confirm the payment using the token
+        if (!event) {
+          console.error('Event is undefined.');
+          return;
+        }
+
         try {
+          // Confirm the payment using the token
           const { data } = await axios.post(
             'http://localhost:3000/api/payments/subscribe',
             {
@@ -69,17 +88,18 @@ const StripePayment = () => {
               currency,
             }
           );
+
           setClientSecret(data.clientSecret);
-          event.complete('success')
+          event.complete('success'); // Call complete with success
           alert('Payment successful!');
         } catch (error) {
           console.error('Error processing payment:', error);
-          event.complete('fail')
+          event.complete('fail'); // Call complete with failure
           alert('Payment failed, please try again.');
         }
       });
     }
-  }, [stripe, subscriptionType, currency]);
+  }, [stripe, subscriptionType, currency, country]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
