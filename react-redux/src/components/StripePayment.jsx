@@ -98,6 +98,11 @@ const StripePayment = () => {
               paymentMethodId: event.paymentMethod.id,
               subscriptionType,
               currency,
+            },
+            {
+              headers: {
+                Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwic2Vzc2lvbklkIjo2LCJpYXQiOjE3MjI2OTI4OTMsImV4cCI6MTcyMjc3OTI5M30.iLnFduNcNyhd1QoCRbkyP-2m0MhH-jDcsM3BgkkOnqo`,
+              },
             }
           );
   
