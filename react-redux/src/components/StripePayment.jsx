@@ -11,7 +11,7 @@ import {
 } from '@stripe/react-stripe-js';
 import axios from 'axios';
 
-const stripePromise = loadStripe('pk_test_51GyLKTD8bKf8QQtz5VPgmCbpvqrXJgAUMNIXkz41l8iqnYymMCPo9ePEDhMiFRcMXpoQzXIjw7F8WKjq7XhYVwtY00skOdOq55');
+const stripePromise = loadStripe(process.env.STRIPE_PUBLISHABLE_KEY);
 
 const ELEMENT_OPTIONS = {
   style: {
