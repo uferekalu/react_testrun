@@ -81,20 +81,15 @@ const StripePayment = () => {
         requestPayerName: true,
         requestPayerEmail: true,
       });
-
+  
       pr.canMakePayment().then((result) => {
         if (result) {
           setPaymentRequest(pr);
         }
       });
-
+  
       // Handle the payment request event
-      pr.on('token', async (token, event) => {
-        if (!event) {
-          console.error('Event is undefined.');
-          return;
-        }
-
+      pr.on('token', async (token) => {
         try {
           // Confirm the payment using the token
           const { data } = await axios.post(
@@ -105,19 +100,25 @@ const StripePayment = () => {
               currency,
             }
           );
-
+  
           setClientSecret(data.clientSecret);
-          event.complete('success'); // Call complete with success
+  
+          // Instead of using event.complete, handle it directly
+          pr.complete('success'); // Complete the payment request with success
           alert('Payment successful!');
         } catch (error) {
           console.error('Error processing payment:', error);
-          event.complete('fail'); // Call complete with failure
+          pr.complete('fail'); // Complete the payment request with failure
           alert('Payment failed, please try again.');
         }
       });
+  
+      return () => {
+        pr.off('token');
+      };
     }
   }, [stripe, subscriptionType, currency, country]);
-
+  
   const handleSubmit = async (event) => {
     event.preventDefault();
 
