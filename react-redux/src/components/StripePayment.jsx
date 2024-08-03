@@ -11,7 +11,7 @@ import {
 } from '@stripe/react-stripe-js';
 import axios from 'axios';
 
-const stripePromise = loadStripe('pk_test_51GyLKTD8bKf8QQtz5VPgmCbpvqrXJgAUMNIXkz41l8iqnYymMCPo9ePEDhMiFRcMXpoQzXIjw7F8WKjq7XhYVwtY00skOdOq55');
+const stripePromise = loadStripe('pk_test_51PfMsOFKqtJirIZAIE7KQ33uwg87PPPe8UpFTrETBxmFyVR12T6CLSaNWIomyuubtJj9Q5ZqwbY6nhv7add9Nlu400IJvHnM8p');
 
 const ELEMENT_OPTIONS = {
   style: {
@@ -101,7 +101,7 @@ const StripePayment = () => {
             },
             {
               headers: {
-                Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwic2Vzc2lvbklkIjo2LCJpYXQiOjE3MjI2OTI4OTMsImV4cCI6MTcyMjc3OTI5M30.iLnFduNcNyhd1QoCRbkyP-2m0MhH-jDcsM3BgkkOnqo`,
+                Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwic2Vzc2lvbklkIjo0NywiaWF0IjoxNzIyNzAxMTE4LCJleHAiOjE3MjI3ODc1MTh9.GDVvrpsrVxG2NBGQoEXVyg_pZa6fdaGifIZw5CvjF0E`,
               },
             }
           );
@@ -142,7 +142,7 @@ const StripePayment = () => {
         },
         {
           headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwic2Vzc2lvbklkIjo2LCJpYXQiOjE3MjI2OTI4OTMsImV4cCI6MTcyMjc3OTI5M30.iLnFduNcNyhd1QoCRbkyP-2m0MhH-jDcsM3BgkkOnqo`,
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwic2Vzc2lvbklkIjo0NywiaWF0IjoxNzIyNzAxMTE4LCJleHAiOjE3MjI3ODc1MTh9.GDVvrpsrVxG2NBGQoEXVyg_pZa6fdaGifIZw5CvjF0E`,
           },
         }
       );
