@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { loadStripe } from '@stripe/stripe-js'
+import React, { useState, useEffect } from 'react';
+import { loadStripe } from '@stripe/stripe-js';
 import {
   Elements,
   CardNumberElement,
@@ -7,19 +7,17 @@ import {
   CardCvcElement,
   useStripe,
   useElements,
-} from '@stripe/react-stripe-js'
-import axios from 'axios'
+  PaymentRequestButtonElement,
+} from '@stripe/react-stripe-js';
+import axios from 'axios';
 
-const stripePromise = loadStripe(
-  'pk_test_51GyLKTD8bKf8QQtz5VPgmCbpvqrXJgAUMNIXkz41l8iqnYymMCPo9ePEDhMiFRcMXpoQzXIjw7F8WKjq7XhYVwtY00skOdOq55',
-)
+const stripePromise = loadStripe('pk_test_51GyLKTD8bKf8QQtz5VPgmCbpvqrXJgAUMNIXkz41l8iqnYymMCPo9ePEDhMiFRcMXpoQzXIjw7F8WKjq7XhYVwtY00skOdOq55');
 
 const ELEMENT_OPTIONS = {
   style: {
     base: {
       color: '#32325d',
       fontFamily: 'Arial, sans-serif',
-      fontSmoothing: 'antialiased',
       fontSize: '16px',
       '::placeholder': {
         color: '#aab7c4',
@@ -30,20 +28,62 @@ const ELEMENT_OPTIONS = {
       iconColor: '#fa755a',
     },
   },
-}
+};
 
 const StripePayment = () => {
-  const [subscriptionType, setSubscriptionType] = useState('free')
-  const [currency, setCurrency] = useState('usd')
-  const [clientSecret, setClientSecret] = useState('')
-  const stripe = useStripe()
-  const elements = useElements()
+  const [subscriptionType, setSubscriptionType] = useState('standard');
+  const [currency, setCurrency] = useState('usd');
+  const [clientSecret, setClientSecret] = useState('');
+  const [paymentRequest, setPaymentRequest] = useState(null);
+  const stripe = useStripe();
+  const elements = useElements();
+
+  useEffect(() => {
+    if (stripe) {
+      const pr = stripe.paymentRequest({
+        country: 'US',
+        currency: currency,
+        total: {
+          label: 'Subscription',
+          amount: subscriptionType === 'standard' ? 1200 : 2200,
+        },
+        requestPayerName: true,
+        requestPayerEmail: true,
+      });
+
+      pr.canMakePayment().then((result) => {
+        if (result) {
+          setPaymentRequest(pr);
+        }
+      });
+
+      // Handle the payment request event
+      pr.on('token', async (token) => {
+        // Confirm the payment using the token
+        try {
+          const { data } = await axios.post(
+            'http://localhost:3000/api/payments/subscribe',
+            {
+              token: token.id,
+              subscriptionType,
+              currency,
+            }
+          );
+          setClientSecret(data.clientSecret);
+          alert('Payment successful!');
+        } catch (error) {
+          console.error('Error processing payment:', error);
+          alert('Payment failed, please try again.');
+        }
+      });
+    }
+  }, [stripe, subscriptionType, currency]);
 
   const handleSubmit = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
 
     if (!stripe || !elements) {
-      return
+      return;
     }
 
     try {
@@ -56,18 +96,15 @@ const StripePayment = () => {
         },
         {
           headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Miwic2Vzc2lvbklkIjoyLCJpYXQiOjE3MjIxNjM3NDAsImV4cCI6MTcyMjI1MDE0MH0._otsJHqd5_M5v3LGOA-VBHePRPhAWw91FPbxfMPjxNk`,
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwic2Vzc2lvbklkIjo1LCJpYXQiOjE3MjI2NzU1MDgsImV4cCI6MTcyMjc2MTkwOH0.XufSJ-4eKy-oVPZKB3af80LroQj2iRs9n-vQzyTg2Zc`,
           },
-        },
-      )
+        }
+      );
 
-      console.log(data)
-
-      setClientSecret(data.clientSecret)
+      setClientSecret(data.clientSecret);
 
       // Step 2: Confirm Card Payment
-      const cardElement = elements.getElement(CardNumberElement)
-      console.log('Card Element:', elements.getElement(CardNumberElement))
+      const cardElement = elements.getElement(CardNumberElement);
 
       const { error, paymentIntent } = await stripe.confirmCardPayment(
         data.clientSecret,
@@ -75,16 +112,15 @@ const StripePayment = () => {
           payment_method: {
             card: cardElement,
             billing_details: {
-              // You can add additional billing details here if needed
-              name: 'Goodnews Vncent', // Replace with actual user name
+              name: 'Goodnews Vncent',
             },
           },
-        },
-      )
+        }
+      );
 
       if (error) {
-        console.error('Payment failed:', error)
-        alert(`Payment failed: ${error.message}`)
+        console.error('Payment failed:', error);
+        alert(`Payment failed: ${error.message}`);
       } else if (paymentIntent.status === 'succeeded') {
         const verificationResponse = await axios.post(
           'http://localhost:3000/api/payments/verify/subscription',
@@ -93,50 +129,35 @@ const StripePayment = () => {
           },
           {
             headers: {
-              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Miwic2Vzc2lvbklkIjoyLCJpYXQiOjE3MjIxNjM3NDAsImV4cCI6MTcyMjI1MDE0MH0._otsJHqd5_M5v3LGOA-VBHePRPhAWw91FPbxfMPjxNk`,
+              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwic2Vzc2lvbklkIjo1LCJpYXQiOjE3MjI2NzU1MDgsImV4cCI6MTcyMjc2MTkwOH0.XufSJ-4eKy-oVPZKB3af80LroQj2iRs9n-vQzyTg2Zc`,
             },
-          },
-        )
+          }
+        );
         if (verificationResponse.data.valid) {
-          alert('Payment and subscription successful!')
+          alert('Payment and subscription successful!');
         } else {
-          alert('Subscription verification failed.')
+          alert('Subscription verification failed.');
         }
       }
     } catch (error) {
-      console.error('Error processing payment:', error)
+      console.error('Error processing payment:', error);
     }
-  }
+  };
 
   return (
     <div>
       <h2>Stripe Payment</h2>
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '10px',
-        }}
-      >
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <label>
           Subscription Type:
-          <select
-            value={subscriptionType}
-            onChange={(e) => setSubscriptionType(e.target.value)}
-          >
-            <option value="free">Free</option>
+          <select value={subscriptionType} onChange={(e) => setSubscriptionType(e.target.value)}>
             <option value="standard">Standard</option>
             <option value="premium">Premium</option>
           </select>
         </label>
         <label>
           Currency:
-          <input
-            type="text"
-            value={currency}
-            onChange={(e) => setCurrency(e.target.value)}
-          />
+          <input type="text" value={currency} onChange={(e) => setCurrency(e.target.value)} />
         </label>
         <label>
           Card Number:
@@ -151,17 +172,24 @@ const StripePayment = () => {
           <CardCvcElement options={ELEMENT_OPTIONS} />
         </label>
         <button type="submit" disabled={!stripe || !elements}>
-          Pay
+          Pay with Card
         </button>
       </form>
+
+      {paymentRequest && (
+        <div>
+          <h3>Alternative Payment Methods</h3>
+          <PaymentRequestButtonElement options={{ paymentRequest }} />
+        </div>
+      )}
     </div>
-  )
-}
+  );
+};
 
 export default function WrappedStripePayment() {
   return (
     <Elements stripe={stripePromise}>
       <StripePayment />
     </Elements>
-  )
+  );
 }
