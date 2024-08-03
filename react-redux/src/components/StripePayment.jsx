@@ -137,7 +137,7 @@ const StripePayment = () => {
         },
         {
           headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwic2Vzc2lvbklkIjo1LCJpYXQiOjE3MjI2NzU1MDgsImV4cCI6MTcyMjc2MTkwOH0.XufSJ-4eKy-oVPZKB3af80LroQj2iRs9n-vQzyTg2Zc`,
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwic2Vzc2lvbklkIjo2LCJpYXQiOjE3MjI2OTI4OTMsImV4cCI6MTcyMjc3OTI5M30.iLnFduNcNyhd1QoCRbkyP-2m0MhH-jDcsM3BgkkOnqo`,
           },
         }
       );
@@ -170,7 +170,7 @@ const StripePayment = () => {
           },
           {
             headers: {
-              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwic2Vzc2lvbklkIjo1LCJpYXQiOjE3MjI2NzU1MDgsImV4cCI6MTcyMjc2MTkwOH0.XufSJ-4eKy-oVPZKB3af80LroQj2iRs9n-vQzyTg2Zc`,
+              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwic2Vzc2lvbklkIjo2LCJpYXQiOjE3MjI2OTI4OTMsImV4cCI6MTcyMjc3OTI5M30.iLnFduNcNyhd1QoCRbkyP-2m0MhH-jDcsM3BgkkOnqo`,
             },
           }
         );
