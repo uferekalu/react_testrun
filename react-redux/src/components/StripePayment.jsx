@@ -58,7 +58,7 @@ const StripePayment = () => {
       });
 
       // Handle the payment request event
-      pr.on('token', async (token) => {
+      pr.on('token', async (token, event) => {
         // Confirm the payment using the token
         try {
           const { data } = await axios.post(
@@ -70,9 +70,11 @@ const StripePayment = () => {
             }
           );
           setClientSecret(data.clientSecret);
+          event.complete('success')
           alert('Payment successful!');
         } catch (error) {
           console.error('Error processing payment:', error);
+          event.complete('fail')
           alert('Payment failed, please try again.');
         }
       });
