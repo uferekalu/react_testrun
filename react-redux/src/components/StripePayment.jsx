@@ -52,8 +52,12 @@ const StripePayment = () => {
     name: '',
     country: '',
     address: '',
-    address_line2: ''
+    address_line2: '',
+    city: '',
+    state: '',
+    postal_code: '',
   });
+  
   const [expirationDate, setExpirationDate] = useState('');
   const [cvc, setCvc] = useState('');
 
@@ -151,9 +155,13 @@ const StripePayment = () => {
         country: value.country,
         address: value.address,
         address_line2: value.address_line2 || '',
+        city: value.city || '',         // Set city
+        state: value.state || '',       // Set state
+        postal_code: value.postal_code || '', // Set postal code
       }));
     }
   };
+  
 
   const handleExpirationChange = (event) => {
     if (event.complete) {
@@ -208,11 +216,14 @@ const StripePayment = () => {
             billing_details: {
               name: billingDetails.name,
               address: {
-                country: billingDetails.country,
                 line1: billingDetails.address,
                 line2: billingDetails.address_line2,
+                city: billingDetails.city,
+                state: billingDetails.state,
+                postal_code: billingDetails.postal_code,
+                country: billingDetails.country,
               },
-            },
+            }
           },
         }
       );
