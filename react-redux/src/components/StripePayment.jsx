@@ -134,7 +134,7 @@ const StripePayment = () => {
 
   const handleCardChange = (event) => {
     if (event.complete) {
-      const cardNumber = event.element.value;
+      const cardNumber = event.value;
       const cardBrand = event.brand;
 
       setCardType(cardBrand);
