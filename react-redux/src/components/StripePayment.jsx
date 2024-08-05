@@ -11,7 +11,7 @@ import {
 } from '@stripe/react-stripe-js';
 import axios from 'axios';
 
-const stripePromise = loadStripe('pk_test_51PfMsOFKqtJirIZAIE7KQ33uwg87PPPe8UpFTrETBxmFyVR12T6CLSaNWIomyuubtJj9Q5ZqwbY6nhv7add9Nlu400IJvHnM8p');
+const stripePromise = loadStripe('pk_test_51GyLKTD8bKf8QQtz5VPgmCbpvqrXJgAUMNIXkz41l8iqnYymMCPo9ePEDhMiFRcMXpoQzXIjw7F8WKjq7XhYVwtY00skOdOq55');
 
 const ELEMENT_OPTIONS = {
   style: {
@@ -54,12 +54,11 @@ const StripePayment = () => {
         const response = await axios.get('https://ipapi.co/json/');
         const userCountry = response.data.country_code;
 
-        // Check if the country is supported
         if (supportedCountries.includes(userCountry)) {
           setCountry(userCountry);
         } else {
           console.warn(`Country ${userCountry} is not supported. Defaulting to 'US'.`);
-          setCountry('US'); // Fallback to US if unsupported
+          setCountry('US');
         }
       } catch (error) {
         console.error('Error fetching country:', error);
@@ -72,7 +71,7 @@ const StripePayment = () => {
   useEffect(() => {
     if (stripe) {
       const pr = stripe.paymentRequest({
-        country: country, // Use the detected or default country
+        country: country,
         currency: currency,
         total: {
           label: 'Subscription',
@@ -88,10 +87,8 @@ const StripePayment = () => {
         }
       });
   
-      // Handle the payment request event
       pr.on('paymentmethod', async (event) => {
         try {
-          // Confirm the payment using the payment method
           const { data } = await axios.post(
             'http://localhost:3000/api/payments/subscribe',
             {
@@ -101,19 +98,18 @@ const StripePayment = () => {
             },
             {
               headers: {
-                Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwic2Vzc2lvbklkIjo0NywiaWF0IjoxNzIyNzAxMTE4LCJleHAiOjE3MjI3ODc1MTh9.GDVvrpsrVxG2NBGQoEXVyg_pZa6fdaGifIZw5CvjF0E`,
+                Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwic2Vzc2lvbklkIjo3LCJpYXQiOjE3MjI4NDg2NDEsImV4cCI6MTcyMjkzNTA0MX0.uvZV8ygv-iBwyxzmB9AY_2adikRM1d8V3SOHLbyhcyE`,
               },
             }
           );
   
           setClientSecret(data.clientSecret);
   
-          // Complete the payment request with success
           event.complete('success');
           alert('Payment successful!');
         } catch (error) {
           console.error('Error processing payment:', error);
-          event.complete('fail'); // Complete the payment request with failure
+          event.complete('fail');
           alert('Payment failed, please try again.');
         }
       });
@@ -133,7 +129,6 @@ const StripePayment = () => {
     }
 
     try {
-      // Step 1: Create Subscription Payment Intent
       const { data } = await axios.post(
         'http://localhost:3000/api/payments/subscribe',
         {
@@ -142,14 +137,13 @@ const StripePayment = () => {
         },
         {
           headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwic2Vzc2lvbklkIjo0NywiaWF0IjoxNzIyNzAxMTE4LCJleHAiOjE3MjI3ODc1MTh9.GDVvrpsrVxG2NBGQoEXVyg_pZa6fdaGifIZw5CvjF0E`,
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwic2Vzc2lvbklkIjo3LCJpYXQiOjE3MjI4NDg2NDEsImV4cCI6MTcyMjkzNTA0MX0.uvZV8ygv-iBwyxzmB9AY_2adikRM1d8V3SOHLbyhcyE`,
           },
         }
       );
 
       setClientSecret(data.clientSecret);
 
-      // Step 2: Confirm Card Payment
       const cardElement = elements.getElement(CardNumberElement);
 
       const { error, paymentIntent } = await stripe.confirmCardPayment(
