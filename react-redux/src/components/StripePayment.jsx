@@ -227,14 +227,7 @@ const StripePayment = () => {
             card: cardElement,
             billing_details: {
               name: billingDetails.name,
-              // address: {
-              //   line1: billingDetails.address,
-              //   line2: billingDetails.address_line2,
-              //   city: billingDetails.city,
-              //   state: billingDetails.state,
-              //   postal_code: billingDetails.postal_code,
-              //   country: billingDetails.country,
-              // },
+              address: billingDetails.address,
             }
           },
         }
