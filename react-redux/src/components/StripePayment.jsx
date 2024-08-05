@@ -47,7 +47,14 @@ const StripePayment = () => {
   const [paymentRequest, setPaymentRequest] = useState(null);
   const [country, setCountry] = useState('US');
   const [cardType, setCardType] = useState('');
-  const [cardHolderName, setCardHolderName] = useState('');
+  const [cardNumber, setCardNumber] = useState('')
+  const [billingDetails, setBillingDetails] = useState({
+    name: '',
+    country: '',
+    address: '',
+  });
+  const [expirationDate, setExpirationDate] = useState('');
+  const [cvc, setCvc] = useState('');
 
   const stripe = useStripe();
   const elements = useElements();
@@ -130,6 +137,31 @@ const StripePayment = () => {
       const cardBrand = event.brand;
 
       setCardType(cardBrand);
+      setCardNumber(cardNumber)
+    }
+  };
+
+  const handleBillingDetailsChange = (event) => {
+    const { complete, value } = event;
+    if (complete) {
+      setBillingDetails((prevDetails) => ({
+        ...prevDetails,
+        name: value.name,
+        country: value.country,
+        address: value.address,
+      }));
+    }
+  };
+
+  const handleExpirationChange = (event) => {
+    if (event.complete) {
+      setExpirationDate(event.value);
+    }
+  };
+
+  const handleCvcChange = (event) => {
+    if (event.complete) {
+      setCvc(event.value);
     }
   };
   
@@ -147,6 +179,12 @@ const StripePayment = () => {
         {
           subscriptionType,
           currency,
+          cardNumber,
+          cardType,
+          nameOnCard: billingDetails.name,
+          billingAddress1: billingDetails.address,
+          cvc,
+          cardExpirationDate: expirationDate
         },
         {
           headers: {
@@ -165,10 +203,10 @@ const StripePayment = () => {
           payment_method: {
             card: cardElement,
             billing_details: {
-              name: cardHolderName, // Use the state for the cardholder name
+              name: billingDetails.name,
               address: {
-                // You can extract address details from AddressElement if required
-                country: country,
+                country: billingDetails.country,
+                line1: billingDetails.address,
               },
             },
           },
@@ -216,19 +254,10 @@ const StripePayment = () => {
           Currency:
           <input type="text" value={currency} onChange={(e) => setCurrency(e.target.value)} />
         </label>
-        <label>
-          Cardholder Name:
-          <input 
-            type="text" 
-            value={cardHolderName} 
-            onChange={(e) => setCardHolderName(e.target.value)} 
-            placeholder="Name on Card" 
-            required 
-          />
-        </label>
+        
         <label>
           Billing Address:
-          <AddressElement options={{ mode: 'shipping' }} />
+          <AddressElement options={{ mode: 'shipping' }} onChange={handleBillingDetailsChange} />
         </label>
         <label>
           Card Number:
@@ -236,11 +265,11 @@ const StripePayment = () => {
         </label>
         <label>
           Expiration Date:
-          <CardExpiryElement options={ELEMENT_OPTIONS} />
+          <CardExpiryElement options={ELEMENT_OPTIONS} onChange={handleExpirationChange} />
         </label>
         <label>
           CVC:
-          <CardCvcElement options={ELEMENT_OPTIONS} />
+          <CardCvcElement options={ELEMENT_OPTIONS} onChange={handleCvcChange} />
         </label>
         <button type="submit" disabled={!stripe || !elements}>
           Pay with Card
