@@ -8,6 +8,7 @@ import {
   useStripe,
   useElements,
   PaymentRequestButtonElement,
+  AddressElement,
 } from '@stripe/react-stripe-js';
 import axios from 'axios';
 
@@ -45,6 +46,9 @@ const StripePayment = () => {
   const [clientSecret, setClientSecret] = useState('');
   const [paymentRequest, setPaymentRequest] = useState(null);
   const [country, setCountry] = useState('US');
+  const [cardType, setCardType] = useState('');
+  const [cardHolderName, setCardHolderName] = useState('');
+
   const stripe = useStripe();
   const elements = useElements();
 
@@ -119,6 +123,15 @@ const StripePayment = () => {
       };
     }
   }, [stripe, subscriptionType, currency, country]);
+
+  const handleCardChange = (event) => {
+    if (event.complete) {
+      const cardNumber = event.element.value;
+      const cardBrand = event.brand;
+
+      setCardType(cardBrand);
+    }
+  };
   
   
   const handleSubmit = async (event) => {
@@ -152,7 +165,11 @@ const StripePayment = () => {
           payment_method: {
             card: cardElement,
             billing_details: {
-              name: 'Goodnews Vncent',
+              name: cardHolderName, // Use the state for the cardholder name
+              address: {
+                // You can extract address details from AddressElement if required
+                country: country,
+              },
             },
           },
         }
@@ -200,8 +217,22 @@ const StripePayment = () => {
           <input type="text" value={currency} onChange={(e) => setCurrency(e.target.value)} />
         </label>
         <label>
+          Cardholder Name:
+          <input 
+            type="text" 
+            value={cardHolderName} 
+            onChange={(e) => setCardHolderName(e.target.value)} 
+            placeholder="Name on Card" 
+            required 
+          />
+        </label>
+        <label>
+          Billing Address:
+          <AddressElement options={{ mode: 'shipping' }} />
+        </label>
+        <label>
           Card Number:
-          <CardNumberElement options={ELEMENT_OPTIONS} />
+          <CardNumberElement options={ELEMENT_OPTIONS} onChange={handleCardChange} />
         </label>
         <label>
           Expiration Date:
