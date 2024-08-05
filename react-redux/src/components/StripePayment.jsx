@@ -52,6 +52,7 @@ const StripePayment = () => {
     name: '',
     country: '',
     address: '',
+    address_line2: ''
   });
   const [expirationDate, setExpirationDate] = useState('');
   const [cvc, setCvc] = useState('');
@@ -149,6 +150,7 @@ const StripePayment = () => {
         name: value.name,
         country: value.country,
         address: value.address,
+        address_line2: value.address_line2 || '',
       }));
     }
   };
@@ -183,6 +185,7 @@ const StripePayment = () => {
           cardType,
           nameOnCard: billingDetails.name,
           billingAddress1: billingDetails.address,
+          billingAddress2: billingDetails.address_line2,
           cvc,
           cardExpirationDate: expirationDate
         },
@@ -207,6 +210,7 @@ const StripePayment = () => {
               address: {
                 country: billingDetails.country,
                 line1: billingDetails.address,
+                line2: billingDetails.address_line2,
               },
             },
           },
