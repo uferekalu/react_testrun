@@ -57,10 +57,22 @@ const StripePayment = () => {
     state: '',
     postal_code: '',
   });
+
   
   const [expirationDate, setExpirationDate] = useState('');
   const [cvc, setCvc] = useState('');
-
+  
+  console.log({
+    subscriptionType,
+    currency,
+    cardNumber,
+    cardType,
+    nameOnCard: billingDetails.name,
+    billingAddress1: billingDetails.address,
+    billingAddress2: billingDetails.address_line2,
+    cvc: cvc,
+    cardExpirationDate: expirationDate
+  })
   const stripe = useStripe();
   const elements = useElements();
 
@@ -165,6 +177,7 @@ const StripePayment = () => {
 
   const handleExpirationChange = (event) => {
     if (event.complete) {
+      console.log(event)
       setExpirationDate(event.value);
     }
   };
@@ -192,8 +205,7 @@ const StripePayment = () => {
           cardNumber,
           cardType,
           nameOnCard: billingDetails.name,
-          billingAddress1: billingDetails.address,
-          billingAddress2: billingDetails.address_line2,
+          billingAddress1: JSON.stringify(billingDetails.address),
           cvc,
           cardExpirationDate: expirationDate
         },
