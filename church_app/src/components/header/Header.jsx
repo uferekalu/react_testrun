@@ -140,12 +140,12 @@ function Header() {
             )}
           </>
         )}
-        {/* <AnimatedButton
+        <AnimatedButton
           text="Register"
           onClick={handleCreateRegister}
           className={classes.header__contactUs__register__signup}
           type="button"
-        /> */}
+        />
       </motion.div>
       <motion.div
         initial={{ opacity: 0, x: -50 }}
@@ -246,14 +246,14 @@ function Header() {
               </>
             )}
 
-            {/* <AnimatedButton
+            <AnimatedButton
               text="Register"
               onClick={handleCreateRegister}
               className={
                 classes.header__mobileMenu__menucontent__container__signup
               }
               type="button"
-            /> */}
+            />
           </div>
         </motion.div>
       </motion.div>

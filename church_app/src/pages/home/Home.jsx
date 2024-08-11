@@ -7,7 +7,7 @@ import classes from './Home.module.scss'
 import Church from '../../components/church'
 import defaultImg from '../../images/main_logo.png'
 import Text from '../../components/text/Text'
-// import AnimatedButton from '../../components/button/Button'
+import AnimatedButton from '../../components/button/Button'
 import cross from '../../images/cross.jpg'
 import RegisterModal from '../../components/register/RegisterModal'
 import SuccessModal from '../../components/success/SuccessModal'
@@ -109,12 +109,12 @@ function Home() {
               text="Join our February 2024 diet"
               className={classes.home__heroSection__left__description}
             />
-            {/* <AnimatedButton
+            <AnimatedButton
               text="Register here"
               onClick={handleCreateRegister}
               className={classes.home__heroSection__left__learnmore}
               type="button"
-            /> */}
+            />
           </motion.div>
         </motion.div>
         <Text

@@ -164,7 +164,7 @@ function RegisterModal({
               transition={{ duration: 0.5 }}
               className={classes.register__form__header__container__text}
             >
-              Register for February 2024 Diet
+              Register for August 2024 Diet
             </motion.div>
           </motion.div>
           <AnimatedInput
